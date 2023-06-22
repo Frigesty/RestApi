@@ -1,5 +1,7 @@
 package ru.frigesty.tests;
 
+import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -8,13 +10,19 @@ import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInC
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 
-public class HomeTest  {
+public class RequestInTests {
+
+    @BeforeEach
+    public void beforeEach(){
+        RestAssured.baseURI = "https://reqres.in";
+        RestAssured.basePath = "/api";
+    }
 
     @Test
     void correctDataInPageListUsers() {
         given()
                 .when()
-                .get("https://reqres.in/api/users?page=2")
+                .get("/users?page=2")
                 .then()
                 .statusCode(200)
                 .body(matchesJsonSchemaInClasspath("schemes/listUsersScheme.json"))
@@ -29,7 +37,7 @@ public class HomeTest  {
     void correctDataInPageSingleUser() {
         given()
                 .when()
-                .get("https://reqres.in/api/users/2")
+                .get("/users/2")
                 .then()
                 .statusCode(200)
                 .body(matchesJsonSchemaInClasspath("schemes/singleUserScheme.json"))
@@ -44,7 +52,7 @@ public class HomeTest  {
     void pageSingleUserNotFound() {
         given()
                 .when()
-                .get("https://reqres.in/api/users/23")
+                .get("/users/23")
                 .then()
                 .statusCode(404)
                 .log().status()
@@ -55,7 +63,7 @@ public class HomeTest  {
     void correctDataInPageListResource() {
         given()
                 .when()
-                .get("https://reqres.in/api/unknown")
+                .get("/unknown")
                 .then()
                 .statusCode(200)
                 .body(matchesJsonSchemaInClasspath("schemes/listResourceScheme.json"))
@@ -71,7 +79,7 @@ public class HomeTest  {
     void correctDataInPageSingleResource() {
         given()
                 .when()
-                .get("https://reqres.in/api/unknown/2")
+                .get("unknown/2")
                 .then()
                 .statusCode(200)
                 .log().body()
@@ -87,7 +95,7 @@ public class HomeTest  {
     void pageSingleResourceNotFound() {
         given()
                 .when()
-                .get("https://reqres.in/api/unknown/23")
+                .get("/unknown/23")
                 .then()
                 .statusCode(404);
     }
@@ -103,7 +111,7 @@ public class HomeTest  {
             .contentType(JSON)
             .body(requestBody)
             .when()
-            .post("https://reqres.in/api/users?page=2")
+            .post("/users?page=2")
             .then()
             .statusCode(201)
             .body(matchesJsonSchemaInClasspath("schemes/createUserScheme.json"))
@@ -121,7 +129,7 @@ public class HomeTest  {
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
-                .post("https://reqres.in/api/login")
+                .post("/login")
                 .then()
                 .log().status()
                 .log().body()
@@ -138,7 +146,7 @@ public class HomeTest  {
                 .log().body()
                 .body(requestBody)
                 .when()
-                .post("https://reqres.in/api/login")
+                .post("/login")
                 .then()
                 .log().status()
                 .log().body()
@@ -152,7 +160,7 @@ public class HomeTest  {
                 .log().uri()
                 .log().body()
                 .when()
-                .post("https://reqres.in/api/login")
+                .post("/login")
                 .then()
                 .log().status()
                 .log().body()
